@@ -1,0 +1,13 @@
+version: "3.0"
+
+services:
+    sei:
+        build: .
+#        stop_grace_period: 2m30s
+        volumes:
+            - ./sei:/root/.sei
+            - ./config:/sei-config
+        ports:
+            - 8545:8545
+        env_file: .env
+        restart: on-failure
