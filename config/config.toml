@@ -15,7 +15,7 @@
 proxy-app = "tcp://0.0.0.0:26658"
 
 # A custom human readable name for this node
-moniker = "sei-node-1"
+moniker = "sei-node-ssnn-1"
 
 # Mode of Node: full | validator | seed
 # * validator node
@@ -227,7 +227,7 @@ external-address = ""
 bootstrap-peers = ""
 
 # Comma separated list of nodes to keep persistent connections to
-persistent-peers = ""
+persistent-peers = "f97a75fb69d3a5fe893dca7c8d238ccc0bd66a8f@sei-testnet-2.seed.brocha.in:30587"
 
 # UPNP port forwarding
 upnp = false

@@ -1,6 +1,8 @@
 #!/bin/bash
 
-curl https://raw.githubusercontent.com/sei-protocol/testnet/master/sei-devnet-3/genesis.json > ~/.sei/config/genesis.json
+SNAPSHOT_FILE=$(curl -Ls https://snapshots.brocha.in/sei-testnet-2/atlantic-2.json | jq -r .goleveldb.file)
+curl -L https://snapshots.brocha.in/sei-testnet-2/$SNAPSHOT_FILE | lz4 -dc - | tar -xf - -C ~/.sei
+curl https://raw.githubusercontent.com/sei-protocol/testnet/master/atlantic-2/genesis.json > ~/.sei/config/genesis.json
 
 cp /sei-config/config.toml ~/.sei/config/config.toml
 cp /sei-config/client.toml ~/.sei/config/client.toml
