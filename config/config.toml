@@ -15,7 +15,7 @@
 proxy-app = "tcp://127.0.0.1:26658"
 
 # A custom human readable name for this node
-moniker = "borderless-sei-node-lac-1"
+moniker = "node-sei-1"
 
 # Mode of Node: full | validator | seed
 # * validator node
@@ -27,7 +27,7 @@ moniker = "borderless-sei-node-lac-1"
 # * seed node
 #   - only P2P, PEX Reactor
 #   - No priv_validator_key.json, priv_validator_state.json
-mode = "validator"
+mode = "full"
 
 # Database backend: goleveldb | cleveldb | boltdb | rocksdb | badgerdb
 # * goleveldb (github.com/syndtr/goleveldb - most popular implementation)
