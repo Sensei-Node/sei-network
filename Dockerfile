@@ -5,6 +5,9 @@ RUN wget -O sei.tar.gz $(curl -s https://api.github.com/repos/sei-protocol/sei-c
 RUN seidir=$(tar -axvf sei.tar.gz) && cd $(echo $seidir | cut -f1 -d" ") && make install && cp ~/go/bin/seid /usr/bin
 RUN cd / && rm sei.tar.gz && rm -rf $(echo $seidir | cut -f1 -d" ")
 
-COPY ./scripts/init.sh .
-RUN chmod +x ./init.sh
+# RUN mkdir /root/sei-configs
+COPY ./config/client.toml /root/.sei/client.toml
+COPY ./config/config.toml /root/.sei/config.toml
+COPY ./scripts/init.sh /
+RUN chmod +x /init.sh
 ENTRYPOINT ["./init.sh"]
