@@ -224,10 +224,10 @@ external-address = ""
 # Comma separated list of peers to be added to the peer store
 # on startup. Either BootstrapPeers or PersistentPeers are
 # needed for peer discovery
-bootstrap-peers = ""
+bootstrap-peers = "f97a75fb69d3a5fe893dca7c8d238ccc0bd66a8f@sei-testnet-2.seed.brocha.in:30587"
 
 # Comma separated list of nodes to keep persistent connections to
-persistent-peers = "f97a75fb69d3a5fe893dca7c8d238ccc0bd66a8f@sei-testnet-2.seed.brocha.in:30587"
+persistent-peers = ""
 
 # UPNP port forwarding
 upnp = false
