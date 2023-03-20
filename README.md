@@ -2,7 +2,6 @@
 This is the protocol of sei network
 
 
-
 ## General 
 
 Sei is the first sector-specific Layer 1 blockchain, specialized for trading to give exchanges an unfair advantage
@@ -45,6 +44,8 @@ GET_GENESIS= # leave empty if dont want to get genesis file, otherwise put anyth
 STATE_SYNC= # leave empty if dont want to use state sync (for fast sync), otherwise put anything
 SNAP_SYNC= # leave empty if dont want to sync from snapshot, otherwise put anything
 ```
+
+### Run the node
 
 ```
 docker-compose up -d
