@@ -23,4 +23,53 @@ The combination of these optimizations make it possible for new types of financi
 git clone 
 ``` 
 
+### Config client 
+
+### config.toml 
+This configure the general settings like : 
+```
+A custom human readable name for this node
+moniker = 
+...
+# Mode of Node: full | validator | seed
+# * validator node
+#   - all reactors
+#   - with priv_validator_key.json, priv_validator_state.json
+# * full node
+#   - all reactors
+#   - No priv_validator_key.json, priv_validator_state.json
+# * seed node
+#   - only P2P, PEX Reactor
+#   - No priv_validator_key.json, priv_validator_state.json
+mode = "validator"
+...
+# Database directory
+db-dir = "data"
+...
+# Path to the JSON file containing the initial validator set and other meta data
+genesis-file = "config/genesis.json"
+...
+
+```
+
+### client.toml
+```
+# The network chain ID
+chain-id = "atlantic-2"
+# The keyring's backend, where the keys are stored (os|file|kwallet|pass|test|memory)
+keyring-backend = "os"
+# CLI output format (text|json)
+output = "text"
+# <host>:<port> to Tendermint RPC interface for this chain
+node = "tcp://0.0.0.0:26657"
+# Transaction broadcasting mode (sync|async|block)
+broadcast-mode = "sync"
+``` 
+
+```
+docker-compose up -d
+``` 
+
+
+
 
