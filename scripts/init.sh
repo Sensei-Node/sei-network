@@ -12,18 +12,13 @@ if [ "$STATE_SYNC" != "" ]; then
         mv ~/.sei/priv_validator_state.json.backup ~/.sei/data/priv_validator_state.json
         
         STATE_SYNC_RPC=https://sei-testnet-2-rpc.brocha.in
-        SEED_NODE=https://sei-testnet-2-seed.brocha.in
-        STATE_SYNC_PEER=94b63fddfc78230f51aeb7ac34b9fb86bd042a77@sei-testnet-2.p2p.brocha.in:30588
         LATEST_HEIGHT=$(curl -s $STATE_SYNC_RPC/block | jq -r .block.header.height)
         SYNC_BLOCK_HEIGHT=$(($LATEST_HEIGHT - 2000))
         SYNC_BLOCK_HASH=$(curl -s "$STATE_SYNC_RPC/block?height=$SYNC_BLOCK_HEIGHT" | jq -r .block_id.hash)
-        BOOTSTRAP_PEERS=$(curl -L "$SEED_NODE/addrbook.json" | jq -r '[.addrs[].addr | [.id,"@",.ip,":",.port] | join("")] | join(",")')
 
         sed -i.bak -e "s|^enable *=.*|enable = true|" ~/.sei/config/config.toml
-        sed -i.bak -e "s|^rpc-servers *=.*|rpc-servers = \"$STATE_SYNC_RPC,$STATE_SYNC_RPC\"|" ~/.sei/config/config.toml
         sed -i.bak -e "s|^trust-height *=.*|trust-height = $SYNC_BLOCK_HEIGHT|" ~/.sei/config/config.toml
         sed -i.bak -e "s|^trust-hash *=.*|trust-hash = \"$SYNC_BLOCK_HASH\"|" ~/.sei/config/config.toml
-        sed -i.bak -e "s|^bootstrap-peers *=.*|bootstrap-peers = \"$BOOTSTRAP_PEERS\"|" ~/.sei/config/config.toml
         sed -i.bak -e "s|^use-p2p *=.*|use-p2p = true|" ~/.sei/config/config.toml
 
     fi
@@ -42,6 +37,14 @@ fi
 sed -i "s/moniker = \".*\"/moniker = \"$MONIKER\"/" ~/.sei/config/config.toml
 sed -i "s/mode = \".*\"/mode = \"$MODE\"/" ~/.sei/config/config.toml
 sed -i "s/chain-id = \".*\"/chain-id = \"$CHAIN_ID\"/" ~/.sei/config/client.toml
+
+# Peer configs
+STATE_SYNC_RPC=https://sei-testnet-2-rpc.brocha.in
+SEED_NODE=https://sei-testnet-2-seed.brocha.in
+# STATE_SYNC_PEER=94b63fddfc78230f51aeb7ac34b9fb86bd042a77@sei-testnet-2.p2p.brocha.in:30588
+BOOTSTRAP_PEERS=$(curl -L "$SEED_NODE/addrbook.json" | jq -r '[.addrs[].addr | [.id,"@",.ip,":",.port] | join("")] | join(",")')
+sed -i.bak -e "s|^rpc-servers *=.*|rpc-servers = \"$STATE_SYNC_RPC,$STATE_SYNC_RPC\"|" ~/.sei/config/config.toml
+sed -i.bak -e "s|^bootstrap-peers *=.*|bootstrap-peers = \"$BOOTSTRAP_PEERS\"|" ~/.sei/config/config.toml
 
 # More convfigs from brocha.in
 sed -i -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"0.0001usei\"|" ~/.sei/config/app.toml
