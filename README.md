@@ -23,84 +23,28 @@ The combination of these optimizations make it possible for new types of financi
 git clone 
 ``` 
 
-### Step 1 - Config client 
+### Setup .env file
 
-#### config.toml 
-This configure the general settings like : 
-```
-A custom human readable name for this node
-moniker = 
-...
-# Mode of Node: full | validator | seed
-# * validator node
-#   - all reactors
-#   - with priv_validator_key.json, priv_validator_state.json
-# * full node
-#   - all reactors
-#   - No priv_validator_key.json, priv_validator_state.json
-# * seed node
-#   - only P2P, PEX Reactor
-#   - No priv_validator_key.json, priv_validator_state.json
-mode = "validator"
-...
-# Database directory
-db-dir = "data"
-...
-# Path to the JSON file containing the initial validator set and other meta data
-genesis-file = "config/genesis.json"
-...
-# Path to the JSON file containing the private key to use as a validator in the consensus protocol
-key-file = "config/priv_validator_key.json"
+Make a copy of the `.env-default` to `.env` and modify it according to your node neccesities. Note: STATE_SYNC and SNAP_SYNC are only available for atlantic-2 testnet.
 
-# Path to the JSON file containing the last sign state of a validator
-state-file = "data/priv_validator_state.json"
-...
-# Address to listen for incoming connections
-laddr = "tcp://0.0.0.0:26656"
-...
-# Comma separated list of peers to be added to the peer store
-# on startup. Either BootstrapPeers or PersistentPeers are
-# needed for peer discovery
-bootstrap-peers =
-...
-# Comma separated list of nodes to keep persistent connections to
-persistent-peers = ""
-...
-# Maximum number of connections (inbound and outbound).
-max-connections = 200
-...
-# Rate limits the number of incoming connection attempts per IP address.
-max-incoming-connection-attempts = 100
-...
-# State sync rapidly bootstraps a new node by discovering, fetching, and restoring a state machine
-# snapshot from peers instead of fetching and replaying historical blocks. Requires some peers in
-# the network to take and serve state machine snapshots. State sync is not attempted if the node
-# has any local state (LastBlockHeight > 0). The node will have a truncated block history,
-# starting from the height of the snapshot.
-enable = true
-...
-# If using RPC, at least two addresses need to be provided. They should be compatible with net.Dial,
-# for example: "host.example.com:2125"
-rpc-servers = ""
-...
-# The hash and height of a trusted block. Must be within the trust-period.
-trust-height = 3541689
-trust-hash = "EA116CEA4E1FB2BBD3C8EA5EA1D0D0413369A891C9AAE58CC686CACCD9B9D81D"
 ```
+# node moniker for identification
+MONIKER=sei-node-1
 
-#### client.toml
+# setup the chain id (current testnet is atlantic-2)
+CHAIN_ID=sei-devnet-3|atlantic-2 # choose chain id
+
+# common modes are full (for full node) and validator (for validator node)
+MODE=full|validator # choose full, validator, etc.
+
+# for downloading the genesis, currently only setup for atlantic-2
+GET_GENESIS= # leave empty if dont want to get genesis file, otherwise put anything
+
+# you can only use STATE_SYNC or SNAP_SYNC, it prioritizes STATE_SYNC
+# currently only set up for atlantic-2
+STATE_SYNC= # leave empty if dont want to use state sync (for fast sync), otherwise put anything
+SNAP_SYNC= # leave empty if dont want to sync from snapshot, otherwise put anything
 ```
-# The network chain ID
-chain-id = "atlantic-2"
-# The keyring's backend, where the keys are stored (os|file|kwallet|pass|test|memory)
-keyring-backend = "os"
-# CLI output format (text|json)
-output = "text"
-# <host>:<port> to Tendermint RPC interface for this chain
-node = "tcp://0.0.0.0:26657"
-# Transaction broadcasting mode (sync|async|block)
-broadcast-mode = "sync"
-``` 
 
 ```
 docker-compose up -d
