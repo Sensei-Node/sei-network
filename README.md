@@ -23,9 +23,9 @@ The combination of these optimizations make it possible for new types of financi
 git clone 
 ``` 
 
-### Config client 
+### Step 1 - Config client 
 
-### config.toml 
+#### config.toml 
 This configure the general settings like : 
 ```
 A custom human readable name for this node
@@ -49,10 +49,46 @@ db-dir = "data"
 # Path to the JSON file containing the initial validator set and other meta data
 genesis-file = "config/genesis.json"
 ...
+# Path to the JSON file containing the private key to use as a validator in the consensus protocol
+key-file = "config/priv_validator_key.json"
 
+# Path to the JSON file containing the last sign state of a validator
+state-file = "data/priv_validator_state.json"
+...
+# Address to listen for incoming connections
+laddr = "tcp://0.0.0.0:26656"
+...
+# Comma separated list of peers to be added to the peer store
+# on startup. Either BootstrapPeers or PersistentPeers are
+# needed for peer discovery
+bootstrap-peers =
+...
+# Comma separated list of nodes to keep persistent connections to
+persistent-peers = ""
+...
+# Maximum number of connections (inbound and outbound).
+max-connections = 200
+...
+# Rate limits the number of incoming connection attempts per IP address.
+max-incoming-connection-attempts = 100
+...
+# State sync rapidly bootstraps a new node by discovering, fetching, and restoring a state machine
+# snapshot from peers instead of fetching and replaying historical blocks. Requires some peers in
+# the network to take and serve state machine snapshots. State sync is not attempted if the node
+# has any local state (LastBlockHeight > 0). The node will have a truncated block history,
+# starting from the height of the snapshot.
+enable = true
+...
+# If using RPC, at least two addresses need to be provided. They should be compatible with net.Dial,
+# for example: "host.example.com:2125"
+rpc-servers = ""
+...
+# The hash and height of a trusted block. Must be within the trust-period.
+trust-height = 3541689
+trust-hash = "EA116CEA4E1FB2BBD3C8EA5EA1D0D0413369A891C9AAE58CC686CACCD9B9D81D"
 ```
 
-### client.toml
+#### client.toml
 ```
 # The network chain ID
 chain-id = "atlantic-2"
@@ -69,6 +105,9 @@ broadcast-mode = "sync"
 ```
 docker-compose up -d
 ``` 
+
+
+
 
 
 
