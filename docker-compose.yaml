@@ -5,7 +5,7 @@ services:
         build: .
         volumes:
             - ./sei:/root/.sei
-            # - ./config:/sei-config
+            - ./config:/root/sei-configs
         ports:
             - 80:26657
         env_file: .env

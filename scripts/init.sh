@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # copy the factory config files so that we can modify them
-# cp /root/sei-configs/config.toml ~/.sei/config/config.toml
-# cp /root/sei-configs/client.toml ~/.sei/config/client.toml
+cp /root/sei-configs/config.toml ~/.sei/config/config.toml
+cp /root/sei-configs/client.toml ~/.sei/config/client.toml
 
 # it prioritizes STATE_SYNC if enabled (over SNAP_SYNC)
 if [ "$STATE_SYNC" != "" ]; then
