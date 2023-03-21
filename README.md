@@ -63,14 +63,14 @@ All in all, the network seems to be really unstable, at least the `atlantic-2` t
 - The 1s block producing time doesn't help with this instability. The block production time should be increased.
 - The majority of nodes are located in central Europe (Germany, Netherlands, etc.). This leads to high latency with other peers located outside of Europe.
 
-### How to get bootnodes
+### How to get the node in sync
 
 In order to get the peers to be used as bootnodes we use the brocha.in RPC node:
 
-```toml
+```
 STATE_SYNC_RPC=https://sei-testnet-2-rpc.brocha.in
 BOOTSTRAP_PEERS=$(curl -L "$STATE_SYNC_RPC/net_info" | jq -r '[.peers[].url | capture("mconn://(?<peer>.+)").peer] | join(",")')
 sed -i.bak -e "s|^bootstrap-peers *=.*|bootstrap-peers = \"$BOOTSTRAP_PEERS\"|" ~/.sei/config/config.toml
 ```
 
-Having the proper bootnodes is key for having a synced node. If this list is not provided (or has peers that are offline/behind) the node wont be able to start syncing ever.
+Having the proper bootnodes is key for having a synced node. If this list is not provided (or has peers that are offline/behind) the node wont be able to start syncing ever. Also it is not recommended to set up the `persistent-peers` variable inside the `config.toml` file, you should rather use the `bootstrap-peers` variable instead
