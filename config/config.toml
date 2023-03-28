@@ -224,10 +224,10 @@ external-address = ""
 # Comma separated list of peers to be added to the peer store
 # on startup. Either BootstrapPeers or PersistentPeers are
 # needed for peer discovery
-bootstrap-peers = "f97a75fb69d3a5fe893dca7c8d238ccc0bd66a8f@sei-testnet-2.seed.brocha.in:30587"
+bootstrap-peers = ""
 
 # Comma separated list of nodes to keep persistent connections to
-persistent-peers = ""
+persistent-peers = "650a118a5919c1d0eb3d9f17b14cfb2a6b1c8b9d@3.120.150.255:26656,8f61c476ae8862cf5a965f4cb61eb5e217b61927@18.197.228.134:26656,171d20a5e4a6559046cef78fbdeaea4d786c85ad@162.19.232.131:26656,622edfc381a73cb9a624815831d3cbfecab04e4a@141.94.100.234:26656,862b03573172a3366afe1cabb903ba0552689e63@198.244.228.59:11956,650a118a5919c1d0eb3d9f17b14cfb2a6b1c8b9d@3.120.150.255:26656,79389ef8775ad3310b77fcd935db30f32b5ba764@65.108.136.152:28656,4944c0fb34a76ad537f4eefa1734d6f6a2da5ed0@65.109.115.226:11956,f516643bb00dc73b88af8d259736b8cbdf682bab@65.109.32.174:33656,56a1d17ff164627a1102528014d4d165f9862985@65.109.94.250:27656,8f61c476ae8862cf5a965f4cb61eb5e217b61927@18.197.228.134:27656"
 
 # UPNP port forwarding
 upnp = false
