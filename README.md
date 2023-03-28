@@ -54,3 +54,34 @@ sed -i.bak -e "s|^bootstrap-peers *=.*|bootstrap-peers = \"$BOOTSTRAP_PEERS\"|" 
 ```
 
 Having the proper bootnodes is key for having a synced node. If this list is not provided (or has peers that are offline/behind) the node wont be able to start syncing ever. Also it is not recommended to set up the `persistent-peers` variable inside the `config.toml` file, you should rather use the `bootstrap-peers` variable instead
+
+---
+
+## Useful data
+
+### Latest config recommendations
+
+```
+persistent-peers = "650a118a5919c1d0eb3d9f17b14cfb2a6b1c8b9d@3.120.150.255:26656,8f61c476ae8862cf5a965f4cb61eb5e217b61927@18.197.228.134:26656,171d20a5e4a6559046cef78fbdeaea4d786c85ad@162.19.232.131:26656,622edfc381a73cb9a624815831d3cbfecab04e4a@141.94.100.234:26656,862b03573172a3366afe1cabb903ba0552689e63@198.244.228.59:11956,650a118a5919c1d0eb3d9f17b14cfb2a6b1c8b9d@3.120.150.255:26656,79389ef8775ad3310b77fcd935db30f32b5ba764@65.108.136.152:28656,4944c0fb34a76ad537f4eefa1734d6f6a2da5ed0@65.109.115.226:11956,f516643bb00dc73b88af8d259736b8cbdf682bab@65.109.32.174:33656,56a1d17ff164627a1102528014d4d165f9862985@65.109.94.250:27656,8f61c476ae8862cf5a965f4cb61eb5e217b61927@18.197.228.134:27656"
+...
+[statesync]
+enable = true
+use-p2p = false
+rpc-servers = "http://statesync.atlantic-2.seinetwork.io:26657,http://statesync.atlantic-2.seinetwork.io:26657"
+
+# The hash and height of a trusted block. Must be within the trust-period.
+# you may need to get an updated one if it's too far behind
+
+# SYNC_IP=http://statesync.atlantic-2.seinetwork.io
+# STATE_SYNC_RPC="$SYNC_IP:26657"
+# LATEST_HEIGHT=$(curl -s $STATE_SYNC_RPC/block | jq -r .block.header.height)
+# SYNC_BLOCK_HEIGHT=$(($LATEST_HEIGHT - 5000))
+# SYNC_BLOCK_HASH=$(curl -s "$STATE_SYNC_RPC/block?height=$SYNC_BLOCK_HEIGHT" | jq -r .block_id.hash)
+
+trust-height = 4050474. 
+trust-hash = "7A262A6AE17B072D37D15178F172A70F02AFACB76282017BCB8374F4C0C33151"
+```
+
+### How to get validator out of jail
+
+`seid tx slashing unjail --from admin --fees 2000usei -b block -y`
