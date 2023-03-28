@@ -85,3 +85,7 @@ trust-hash = "7A262A6AE17B072D37D15178F172A70F02AFACB76282017BCB8374F4C0C33151"
 ### How to get validator out of jail
 
 `seid tx slashing unjail --from admin --fees 2000usei -b block -y`
+
+### How to modify validator commission
+
+`seid tx staking edit-validator --commission-rate="0" --chain-id="atlantic-2" --from="admin" --fees="2000usei"`
