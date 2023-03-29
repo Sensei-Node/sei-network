@@ -5,8 +5,8 @@ services:
         build: .
         volumes:
             - ./sei:/root/.sei
-            - ./config:/root/sei-configs
         ports:
+            - 26656:26656
             - 80:26657
         env_file: .env
         restart: on-failure
