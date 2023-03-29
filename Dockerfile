@@ -8,8 +8,8 @@ RUN cd sei-chain && git checkout 2.0.40beta-hotfix && make install && cp ~/go/bi
 #RUN cd / && rm sei.tar.gz && rm -rf $(echo $seidir | cut -f1 -d" ")
 
 # RUN mkdir /root/sei-configs
-COPY ./config/client.toml /root/.sei/config/client.toml
-COPY ./config/config.toml /root/.sei/config/config.toml
+#COPY ./config/client.toml /root/.sei/config/client.toml
+#COPY ./config/config.toml /root/.sei/config/config.toml
 COPY ./scripts/init.sh /
 RUN chmod +x /init.sh
 ENTRYPOINT ["./init.sh"]

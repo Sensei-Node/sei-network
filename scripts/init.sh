@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# copy the factory config files so that we can modify them
-cp /root/sei-configs/config.toml ~/.sei/config/config.toml
-cp /root/sei-configs/client.toml ~/.sei/config/client.toml
-cp /root/sei-configs/priv_validator_key.json ~/.sei/config/priv_validator_key.json
-
 # it prioritizes STATE_SYNC if enabled (over SNAP_SYNC)
 if [ "$STATE_SYNC" != "" ]; then
     if [ "$CHAIN_ID" == "atlantic-2" ]; then
@@ -12,7 +7,6 @@ if [ "$STATE_SYNC" != "" ]; then
         rm -rf ~/.sei/data/*
         mv ~/.sei/priv_validator_state.json.backup ~/.sei/data/priv_validator_state.json
 
-        #STATE_SYNC_RPC=https://sei-testnet-2-rpc.brocha.in
         SYNC_IP=http://statesync.atlantic-2.seinetwork.io
         STATE_SYNC_RPC="$SYNC_IP:26657"
         LATEST_HEIGHT=$(curl -s $STATE_SYNC_RPC/block | jq -r .block.header.height)
@@ -42,23 +36,9 @@ sed -i "s/mode = \".*\"/mode = \"$MODE\"/" ~/.sei/config/config.toml
 sed -i "s/chain-id = \".*\"/chain-id = \"$CHAIN_ID\"/" ~/.sei/config/client.toml
 
 # Peer configs
-#STATE_SYNC_RPC=https://sei-testnet-2-rpc.brocha.in
 STATE_SYNC_RPC=http://statesync.atlantic-2.seinetwork.io:26657
-# SEED_NODE=https://sei-testnet-2-seed.brocha.in
-# STATE_SYNC_PEER=94b63fddfc78230f51aeb7ac34b9fb86bd042a77@sei-testnet-2.p2p.brocha.in:30588
-# BOOTSTRAP_PEERS=$(curl -L "$SEED_NODE/addrbook.json" | jq -r '[.addrs[].addr | [.id,"@",.ip,":",.port] | join("")] | join(",")')
-#BOOTSTRAP_PEERS=$(curl -L "$STATE_SYNC_RPC/net_info" | jq -r '[.peers[].url | capture("mconn://(?<peer>.+)").peer] | join(",")')
-#BOOTSTRAP_PEERS="65c257f9275beb1b99ca169ef89743c034b15db0@3.76.192.224:26656,650a118a5919c1d0eb3d9f17b14cfb2a6b1c8b9d@3.120.150.255:26656,5710d992d9c33b01c3b23df4cbd715e9b4c7b46b@3.71.0.14:26656,272699de6f61eb4a7509ae33fa49af0d4bf13784@18.192.115.237:26656,862b03573172a3366afe1cabb903ba0552689e63@198.244.228.59:11956,1a71212a12e67dbf0d1b557e54251676f8f8af6b@65.21.200.7:7000,762cf4f35aec09857df14ac2bc78824f8f89d5db@65.109.28.219:26656"
+PERSISTENT_PEERS="650a118a5919c1d0eb3d9f17b14cfb2a6b1c8b9d@3.120.150.255:26656,8f61c476ae8862cf5a965f4cb61eb5e217b61927@18.197.228.134:26656,171d20a5e4a6559046cef78fbdeaea4d786c85ad@162.19.232.131:26656,622edfc381a73cb9a624815831d3cbfecab04e4a@141.94.100.234:26656,862b03573172a3366afe1cabb903ba0552689e63@198.244.228.59:11956,650a118a5919c1d0eb3d9f17b14cfb2a6b1c8b9d@3.120.150.255:26656,79389ef8775ad3310b77fcd935db30f32b5ba764@65.108.136.152:28656,4944c0fb34a76ad537f4eefa1734d6f6a2da5ed0@65.109.115.226:11956,f516643bb00dc73b88af8d259736b8cbdf682bab@65.109.32.174:33656,56a1d17ff164627a1102528014d4d165f9862985@65.109.94.250:27656,8f61c476ae8862cf5a965f4cb61eb5e217b61927@18.197.228.134:27656"
 sed -i.bak -e "s|^rpc-servers *=.*|rpc-servers = \"$STATE_SYNC_RPC,$STATE_SYNC_RPC\"|" ~/.sei/config/config.toml
-#sed -i.bak -e "s|^bootstrap-peers *=.*|bootstrap-peers = \"$BOOTSTRAP_PEERS\"|" ~/.sei/config/config.toml
-
-# More convfigs from brocha.in
-#sed -i -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"0.0001usei\"|" ~/.sei/config/app.toml
-#sed -i -e "s|^pruning *=.*|pruning = \"custom\"|" ~/.sei/config/app.toml
-#sed -i -e "s|^pruning-keep-recent *=.*|pruning-keep-recent = \"3000\"|" ~/.sei/config/app.toml
-#sed -i -e "s|^pruning-keep-every *=.*|pruning-keep-every = \"0\"|" ~/.sei/config/app.toml
-#sed -i -e "s|^pruning-interval *=.*|pruning-interval = \"10\"|" ~/.sei/config/app.toml
-#sed -i -e "s|^snapshot-interval *=.*|snapshot-interval = \"1000\"|" ~/.sei/config/app.toml
-#sed -i -e "s|^snapshot-keep-recent *=.*|snapshot-keep-recent = \"2\"|" ~/.sei/config/app.toml
+sed -i.bak -e "s|^persistent-peers *=.*|persistent-peers = \"$PERSISTENT_PEERS\"|" ~/.sei/config/config.toml
 
 seid start
