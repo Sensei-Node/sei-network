@@ -105,4 +105,5 @@ getSyncSei() {
 3. Get a copy of latest `/sei/data/priv_validator_state.json`: this file determines the last signature, if the validator was active it is mandatory to have this file not to incurse in double signing
 
 After getting these files just replace on the destination validator server (once it is fully synced). 
-*NOTE: make sure to stop previous validator before creating a copy of the file `/sei/data/priv_validator_state.json`*
+
+**NOTE: make sure to stop previous validator before creating a copy of the file `/sei/data/priv_validator_state.json`**
