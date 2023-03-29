@@ -97,3 +97,12 @@ getSyncSei() {
   json=$(docker exec -it sei-network_sei_1 seid status) ; latest_block_height=$(echo "$json" | jq -r '.SyncInfo.latest_block_height'); max_peer_block_height=$(echo "$json" | jq -r '.SyncInfo.max_peer_block_height'); difference=$((max_peer_block_height-latest_block_height)); echo $(date): $difference
 }
 ```
+
+### How to migrate validator to another node
+
+1. Get a copy of `/sei/XXX.address` and `XXX.info`: these files are required for the validator management (the wallet used for creating the validator)
+2. Get a copy of `/sei/config/priv_validator_key.json`: this file is a must, this is the validator private key
+3. Get a copy of latest `/sei/data/priv_validator_state.json`: this file determines the last signature, if the validator was active it is mandatory to have this file not to incurse in double signing
+
+After getting these files just replace on the destination validator server (once it is fully synced). 
+*NOTE: make sure to stop previous validator before creating a copy of the file `/sei/data/priv_validator_state.json`*
