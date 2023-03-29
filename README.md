@@ -95,4 +95,5 @@ trust-hash = "7A262A6AE17B072D37D15178F172A70F02AFACB76282017BCB8374F4C0C33151"
 ```
 getSyncSei() {
   json=$(docker exec -it sei-network_sei_1 seid status) ; latest_block_height=$(echo "$json" | jq -r '.SyncInfo.latest_block_height'); max_peer_block_height=$(echo "$json" | jq -r '.SyncInfo.max_peer_block_height'); difference=$((max_peer_block_height-latest_block_height)); echo $(date): $difference
-}```
+}
+```
