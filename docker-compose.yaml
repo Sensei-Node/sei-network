@@ -1,12 +1,19 @@
 version: "3.0"
 
 services:
-    sei:
-        build: .
-        volumes:
-            - ./sei:/root/.sei
-        ports:
-            - 26656:26656
-            - 80:26657
-        env_file: .env
-        restart: on-failure
+  sei:
+    build:
+      context: .
+      args:
+        - REL_TAG=$REL_TAG
+    volumes:
+      - ./sei:/root/.sei
+      - ./scripts:/scripts
+    ports:
+      - 26656:26656
+      - 16857:16857
+    restart: unless-stopped
+    env_file: .env
+    logging:
+      options:
+        max-size: "1g"
