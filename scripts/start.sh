@@ -45,7 +45,6 @@ if [ "$DOWNLOAD_SNAPSHOT" != "" ]; then
   # Download latest chain snapshot
   echo "Downloading latest snapshot..."
   curl -L https://snapshots.kjnodes.com/sei/snapshot_latest.tar.lz4 | tar -Ilz4 -xf - -C $HOME/.sei
-  [[ -f $HOME/.sei/data/upgrade-info.json ]] && cp $HOME/.sei/data/upgrade-info.json $HOME/.sei/cosmovisor/genesis/upgrade-info.json
 fi
 
 seid start

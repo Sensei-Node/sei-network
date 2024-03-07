@@ -9,9 +9,6 @@ services:
     volumes:
       - ./sei:/root/.sei
       - ./scripts:/scripts
-    ports:
-      - 26656:26656
-      - 16857:16857
     restart: unless-stopped
     env_file: .env
     logging:
