@@ -80,3 +80,19 @@ getSyncSei() {
 After getting these files just replace on the destination validator server (once it is fully synced). 
 
 **NOTE: make sure to stop previous validator before creating a copy of the file `/sei/data/priv_validator_state.json`**
+
+### How to setup validator identity and details
+
+Identity is just your keybase account, make sure to upload a profile picture.
+
+seid tx staking edit-validator \
+    --identity="keybase_account_name" \
+    --details="Whatever you wish to include as description" \
+    --chain-id=$CHAIN_ID \
+    --from=$ACCOUNT_NAME \
+    --fees="200000usei" \
+    -y --node tcp://localhost:26657
+
+### More useful commands
+
+- https://services.kjnodes.com/mainnet/sei/useful-commands/
