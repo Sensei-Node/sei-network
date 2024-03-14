@@ -85,6 +85,7 @@ After getting these files just replace on the destination validator server (once
 
 Identity is just your keybase account, make sure to upload a profile picture.
 
+```
 seid tx staking edit-validator \
     --identity="keybase_account_name" \
     --details="Whatever you wish to include as description" \
@@ -92,6 +93,7 @@ seid tx staking edit-validator \
     --from=$ACCOUNT_NAME \
     --fees="200000usei" \
     -y --node tcp://localhost:26657
+```
 
 ### More useful commands
 
