@@ -19,23 +19,45 @@ cd sei-network
 Make a copy of the `.env-default` to `.env` and modify it according to your node neccesities. Note: DOWNLOAD_SNAPSHOT is only available for pacific-1 mainnet.
 
 ```
+# ------------------------------------ NODE VARIABLES ------------------------------------
+
 # Github release tag
-REL_TAG=v3.7.0
+REL_TAG=v3.8.0
 
 # For validator recognition
-MONIKER=sei-node-1
+MONIKER=
 # Chain id atlantic-2, pacific-1
-CHAIN_ID=pacific-1
+CHAIN_ID=
 # Node operation mode: full, validator, etc.
-MODE=full
+MODE=
 
 # Node folder structure initialization
 INIT_NODE=
 # For wiping database, first backing up priv-val-state.json
 PRUNE_DATA=
 
-# Start using latest snaptshot from kjnodes
-DOWNLOAD_SNAPSHOT=
+# If you want to include specific peers add them here
+# NOTICE: needs to be in a row format (because it gets pruned if current node is the peer specified)
+INCLUDE_PEERS="node_id@ip:port
+node_id_2@ip:port"
+
+# If you want to set up a validator node with a sentry, the validator peer should be specified here
+# in order not to be broadcasted to the network
+# TO BE IMPLEMENTED
+PRIVATE_PEER=
+
+# ------------------------------------ ORACLE VARIABLES ------------------------------------
+
+# Start ORACLE for price feeds: set to anything different than empty
+START_ORACLE=
+# Keyring password of the oracle account
+PRICE_FEEDER_PASS=
+# Address of the oracle signer, this account should have some sei in order to pay for gas fees
+# Also, thi address should be imported into the node, and the keyring password should be the one 
+# specified above
+ORACLE_SIGNER_ADDR=
+# The validator related to the oracle
+VALIDATOR_ADDR=
 ```
 
 ### Run the node
@@ -46,8 +68,8 @@ docker-compose up -d
 
 ### How to get the node in sync
 
-The easiest way of getting the pacific-1 mainnet full node in sync is downloading the latest snapshot (kjnodes team uploads it once every day), and just wait for the node to finish by itself gathering the latest blocks.
-This is accomplished by setting the flag `DOWNLOAD_SNAPSHOT` to true. After the node starts, it should be set to false (or on the next restart the snapshot will be downloaded).
+The easiest way of getting the `pacific-1` mainnet full node in sync is downloading the latest snapshot (kjnodes team uploads it once every day), and just wait for the node to finish by itself gathering the latest blocks. And for `atlantic-2` testnet, state sync needs to be used. 
+This is automatically done when the node is initialized (setting the env var `INIT_NODE` to true). After the node starts, it should be set to false (otherwise it will be reinitialized again and syncing process would start from zero).
 
 Also, having the proper bootnodes is key for having a synced node. If this list is not provided (or has peers that are offline/behind) the node wont be able to start syncing ever. Also it is not recommended to set up the `persistent-peers` variable inside the `config.toml` file, you should rather use the `bootstrap-peers` variable instead.
 
@@ -93,6 +115,20 @@ seid tx staking edit-validator \
     --from=$ACCOUNT_NAME \
     --fees="200000usei" \
     -y --node tcp://localhost:26657
+```
+
+### Cosmovisor usage
+
+There are some variables that need to be included in order to use cosmovisor as launcher, these could be included in the same `.env` file:
+
+```
+USE_COSMOVISOR=true
+COSMOVISOR_TAG=v1.3.0
+DAEMON_HOME=/root/.sei
+DAEMON_NAME=seid
+UNSAFE_SKIP_BACKUP=true
+DAEMON_RESTART_AFTER_UPGRADE=true
+DAEMON_ALLOW_DOWNLOAD_BINARIES=false
 ```
 
 ### More useful commands
