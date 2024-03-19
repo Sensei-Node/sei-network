@@ -1,4 +1,4 @@
-# [seinetwork](https://www.seinetwork.io/)
+# [Sei-Network Protocol](https://www.seinetwork.io/)
 
 ## General 
 
@@ -41,6 +41,12 @@ PRUNE_DATA=
 INCLUDE_PEERS="node_id@ip:port
 node_id_2@ip:port"
 
+# If you want to use state sync (available for testnet and mainnet)
+USE_STATE_SYNC=
+
+# If you want to use snapshot sync (only available for mainnet)
+USE_SNAPSHOTS=
+
 # If you want to set up a validator node with a sentry, the validator peer should be specified here
 # in order not to be broadcasted to the network
 # TO BE IMPLEMENTED
@@ -68,10 +74,25 @@ docker-compose up -d
 
 ### How to get the node in sync
 
-The easiest way of getting the `pacific-1` mainnet full node in sync is downloading the latest snapshot (kjnodes team uploads it once every day), and just wait for the node to finish by itself gathering the latest blocks. And for `atlantic-2` testnet, state sync needs to be used. 
-This is automatically done when the node is initialized (setting the env var `INIT_NODE` to true). After the node starts, it should be set to false (otherwise it will be reinitialized again and syncing process would start from zero).
+There are two avilable options for syncing the node rapidly, one way (and in our opinion the best) is using `state sync` the project is prepared in a way that you could use this syncing method for both `pacific-1` mainnet and `atlantic-2` testnet.
+The other way of syncing (only available for `pacific-1`) is via snapshots. In order to make use of each method the variables `USE_STATE_SYNC` or `USE_SNAPSHOTS` (in conjunction with `INIT_NODE`) should be set to anything different that empty.
+After the node starts, the variable `INIT_NODE` should be commented out or left blank (otherwise it will be reinitialized again and syncing process would start from zero).
 
 Also, having the proper bootnodes is key for having a synced node. If this list is not provided (or has peers that are offline/behind) the node wont be able to start syncing ever. Also it is not recommended to set up the `persistent-peers` variable inside the `config.toml` file, you should rather use the `bootstrap-peers` variable instead.
+
+### Cosmovisor usage
+
+There are some variables that need to be included in order to use cosmovisor as launcher, these could be included in the same `.env` file:
+
+```
+USE_COSMOVISOR=true
+COSMOVISOR_TAG=v1.3.0
+DAEMON_HOME=/root/.sei
+DAEMON_NAME=seid
+UNSAFE_SKIP_BACKUP=true
+DAEMON_RESTART_AFTER_UPGRADE=true
+DAEMON_ALLOW_DOWNLOAD_BINARIES=false
+```
 
 ---
 
@@ -89,7 +110,7 @@ Also, having the proper bootnodes is key for having a synced node. If this list 
 
 ```
 getSyncSei() {
-  json=$(docker exec -it sei-sei-1 seid status -n tcp://localhost:26657) ; latest_block_height=$(echo "$json" | jq -r '.SyncInfo.latest_block_height'); max_peer_block_height=$(echo "$json" | jq -r '.SyncInfo.max_peer_block_height'); difference=$((max_peer_block_height-latest_block_height)); echo $(date): $difference
+  json=$(docker exec -it sei-network-sei-1 seid status -n tcp://localhost:26657) ; latest_block_height=$(echo "$json" | jq -r '.SyncInfo.latest_block_height'); max_peer_block_height=$(echo "$json" | jq -r '.SyncInfo.max_peer_block_height'); difference=$((max_peer_block_height-latest_block_height)); echo $(date): $difference
 }
 ```
 
@@ -115,20 +136,6 @@ seid tx staking edit-validator \
     --from=$ACCOUNT_NAME \
     --fees="200000usei" \
     -y --node tcp://localhost:26657
-```
-
-### Cosmovisor usage
-
-There are some variables that need to be included in order to use cosmovisor as launcher, these could be included in the same `.env` file:
-
-```
-USE_COSMOVISOR=true
-COSMOVISOR_TAG=v1.3.0
-DAEMON_HOME=/root/.sei
-DAEMON_NAME=seid
-UNSAFE_SKIP_BACKUP=true
-DAEMON_RESTART_AFTER_UPGRADE=true
-DAEMON_ALLOW_DOWNLOAD_BINARIES=false
 ```
 
 ### More useful commands

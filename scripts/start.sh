@@ -37,21 +37,24 @@ if [ "$INIT_NODE" != "" ]; then
     # Initialize cosmovisor data structure
     cosmovisor init /go/bin/seid
   fi
-  # Use state sync for testnet for fast syncing, and download wasm with addrbook
-  # For testnet since we are going to do a state sync, we will need wasm folder
-  if [ "$CHAIN_ID" = "atlantic-2" ]; then
+  if [ "$USE_STATE_SYNC" != "" ]; then
+    # For atlantic-2 testnet we also get the addrbook
+    if [ "$CHAIN_ID" = "atlantic-2" ]; then
+      WASM_URL="https://snapshots.polkachu.com/testnet-wasm/sei/sei_wasmonly.tar.lz4"
+      # Addrbook get
+      wget -O addrbook.json https://snapshots.polkachu.com/testnet-addrbook/sei/addrbook.json --inet4-only
+      mv addrbook.json $HOME/.sei/config
+    elif [ "$CHAIN_ID" = "pacific-1" ]; then
+      WASM_URL="https://snapshots.kjnodes.com/sei/wasm_latest.tar.lz4"
+    fi
     # Remove wasm folder if it exists
     rm -rf $HOME/.sei/wasm
     # Get our wasm folder
-    wget -O sei_wasmonly.tar.lz4 https://snapshots.polkachu.com/testnet-wasm/sei/sei_wasmonly.tar.lz4 --inet4-only
+    wget -O sei_wasmonly.tar.lz4 $WASM_URL --inet4-only
     # Extract the wasm folder into the right place
     lz4 -c -d sei_wasmonly.tar.lz4  | tar -x -C $HOME/.sei
     # Clean up
     rm -rf sei_wasmonly.tar.lz4
-
-    # Addrbook get
-    wget -O addrbook.json https://snapshots.polkachu.com/testnet-addrbook/sei/addrbook.json --inet4-only
-    mv addrbook.json $HOME/.sei/config
 
     # Example: set trust height and hash to be the block height 20,000 earlier
     TRUST_HEIGHT_DELTA=20000
@@ -68,12 +71,23 @@ if [ "$INIT_NODE" != "" ]; then
     sed -i.bak -e "s|^trust-height *=.*|trust-height = $SYNC_BLOCK_HEIGHT|" $HOME/.sei/config/config.toml
     sed -i.bak -e "s|^trust-hash *=.*|trust-hash = \"$SYNC_BLOCK_HASH\"|" $HOME/.sei/config/config.toml
     sed -i.bak -e "s|^db-sync-enable *=.*|db-sync-enable = false|" $HOME/.sei/config/config.toml
-  elif [ "$CHAIN_ID" = "pacific-1" ]; then
-    # Use snapshot sync for mainnet
-    echo "Downloading latest snapshot..."
-    sed -i.bak -e "s|^seeds *=.*|seeds = \"400f3d9e30b69e78a7fb891f60d76fa3c73f0ecc@sei.rpc.kjnodes.com:16859\"|" $HOME/.sei/config/config.toml
+  elif [ "$USE_SNAPSHOTS" != "" ]; then
+    if [ "$CHAIN_ID" = "pacific-1" ]; then
+      # Use snapshot sync for mainnet
+      echo "Downloading latest snapshot..."
+      curl -L https://snapshots.kjnodes.com/sei/snapshot_latest.tar.lz4 | tar -Ilz4 -xf - -C $HOME/.sei
+    fi
+  fi
+  # For mainnet we set min gas price and seed nodes
+  if [ "$CHAIN_ID" = "pacific-1" ]; then
+    # Set min gas price
     sed -i.bak -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"0.02usei\"|" $HOME/.sei/config/app.toml
-    curl -L https://snapshots.kjnodes.com/sei/snapshot_latest.tar.lz4 | tar -Ilz4 -xf - -C $HOME/.sei
+    # Using a seed node to bootstrap is considered the best practice
+    if grep -q '^seeds =' "$HOME/.sei/config/config.toml"; then
+      sed -i.bak -e "s|^seeds *=.*|seeds = \"400f3d9e30b69e78a7fb891f60d76fa3c73f0ecc@sei.rpc.kjnodes.com:16859\"|" $HOME/.sei/config/config.toml
+    else
+      echo 'seeds = "400f3d9e30b69e78a7fb891f60d76fa3c73f0ecc@sei.rpc.kjnodes.com:16859"' >> "$HOME/.sei/config/config.toml"
+    fi
   fi
 fi
 
