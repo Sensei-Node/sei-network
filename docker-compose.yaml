@@ -1,12 +1,38 @@
 version: "3.0"
 
 services:
-    sei:
-        build: .
-        volumes:
-            - ./sei:/root/.sei
-        ports:
-            - 26656:26656
-            - 80:26657
-        env_file: .env
-        restart: on-failure
+  sei:
+    build:
+      context: .
+      args:
+        - REL_TAG=$REL_TAG
+        - COSMOVISOR_TAG=$COSMOVISOR_TAG
+    volumes:
+      - ./sei:/root/.sei
+      - ./scripts:/scripts
+    ports:
+      - 26656:26656
+    restart: unless-stopped
+    env_file: .env
+    logging:
+      options:
+        max-size: "1g"
+
+  oracles:
+    build:
+      context: .
+      args:
+        - REL_TAG=$REL_TAG
+        - COSMOVISOR_TAG=$COSMOVISOR_TAG
+    volumes:
+      - ./sei:/root/.sei
+      - ./scripts:/scripts
+      - ./oracles-config.toml:/root/oracles-config.toml
+    ports:
+      - 7171:7171
+    restart: on-failure
+    env_file: .env
+    entrypoint: ["sh", "/scripts/start-oracle.sh"]
+    logging:
+      options:
+        max-size: "1g"

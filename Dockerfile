@@ -1,15 +1,19 @@
-FROM ubuntu:22.04
+FROM golang:1.22.1
 
-RUN apt update && apt install git lz4 sed wget curl jq golang-go build-essential -y
-RUN git clone https://github.com/sei-protocol/sei-chain.git sei-chain
-RUN cd sei-chain && git fetch && git checkout 3.0.0 && make install && cp ~/go/bin/seid /usr/bin
-#RUN wget -O sei.tar.gz $(curl -s https://api.github.com/repos/sei-protocol/sei-chain/releases/latest | jq -r '.tarball_url') 
-#RUN seidir=$(tar -axvf sei.tar.gz) && cd $(echo $seidir | cut -f1 -d" ") && make install && cp ~/go/bin/seid /usr/bin
-#RUN cd / && rm sei.tar.gz && rm -rf $(echo $seidir | cut -f1 -d" ")
+ARG REL_TAG
+ARG COSMOVISOR_TAG
 
-# RUN mkdir /root/sei-configs
-#COPY ./config/client.toml /root/.sei/config/client.toml
-#COPY ./config/config.toml /root/.sei/config/config.toml
-COPY ./scripts/init.sh /
-RUN chmod +x /init.sh
-ENTRYPOINT ["./init.sh"]
+RUN export GOROOT=/usr/local/go
+RUN export GOPATH=$HOME/go
+RUN export GO111MODULE=on
+RUN export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin:/usr/bin
+
+RUN apt update && apt install git lz4 sed wget curl jq build-essential -y
+RUN git clone https://github.com/sei-protocol/sei-chain.git /root/sei-chain
+WORKDIR /root/sei-chain
+RUN git checkout $REL_TAG && make install && make install-price-feeder
+
+RUN curl -Ls https://github.com/cosmos/cosmos-sdk/releases/download/cosmovisor/$COSMOVISOR_TAG/cosmovisor-$COSMOVISOR_TAG-linux-amd64.tar.gz | tar xz
+RUN chmod 755 cosmovisor && mv cosmovisor /usr/bin/cosmovisor
+
+ENTRYPOINT ["sh", "/scripts/start.sh"]
