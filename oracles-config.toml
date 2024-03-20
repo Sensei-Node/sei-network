@@ -160,6 +160,6 @@ name = "binance"
 rest = "https://api1.binance.com"
 websocket = "stream.binance.com:9443"
 
-# [[healthchecks]]
-# url = "https://hc-ping.com/HEALTHCHECK-UUID"
-# timeout = "5s"
+[[healthchecks]]
+url = "https://hc-ping.com/HEALTHCHECK-UUID"
+timeout = "5s"

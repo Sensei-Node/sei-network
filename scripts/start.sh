@@ -92,14 +92,17 @@ if [ "$INIT_NODE" != "" ]; then
 fi
 
 # Set peering
-OUR_PEERS=$INCLUDE_PEERS
-SELF=$(cat $HOME/.sei/config/node_key.json |jq -r .id)
-$(echo $OUR_PEERS |grep -v "$SELF") > OUR_PEERS
-OUR_PEERS="$(paste -s -d ',' OUR_PEERS)"
-curl "$PRIMARY_RPC"/net_info |jq -r '.peers[] | .url' |sed -e 's#mconn://##' |grep -v "$SELF" |grep -v "localhost" |grep -v "127.0.0.1" |grep -v "0.0.0.0" > PEERS
-PRUNED_PEERS="$(paste -s -d ',' PEERS)"
-PERSISTENT_PEERS="$PRUNED_PEERS,$OUR_PEERS"
-sed -i.bak -e "s|^persistent-peers *=.*|persistent-peers = \"$PERSISTENT_PEERS\"|" $HOME/.sei/config/config.toml
+if [ "$INIT_NODE" != "" ] || [ "$RESET_PEERS" != "" ]; then
+  echo "Setting persistent peers..."
+  OUR_PEERS=$INCLUDE_PEERS
+  SELF=$(cat $HOME/.sei/config/node_key.json |jq -r .id)
+  $(echo $OUR_PEERS |grep -v "$SELF") > OUR_PEERS
+  OUR_PEERS="$(paste -s -d ',' OUR_PEERS)"
+  curl "$PRIMARY_RPC"/net_info |jq -r '.peers[] | .url' |sed -e 's#mconn://##' |grep -v "$SELF" |grep -v "localhost" |grep -v "127.0.0.1" |grep -v "0.0.0.0" > PEERS
+  PRUNED_PEERS="$(paste -s -d ',' PEERS)"
+  PERSISTENT_PEERS="$PRUNED_PEERS,$OUR_PEERS"
+  sed -i.bak -e "s|^persistent-peers *=.*|persistent-peers = \"$PERSISTENT_PEERS\"|" $HOME/.sei/config/config.toml
+fi
 
 # General settings
 sed -i -e "s/moniker = \".*\"/moniker = \"$MONIKER\"/" $HOME/.sei/config/config.toml
