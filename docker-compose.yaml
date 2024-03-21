@@ -29,7 +29,7 @@ services:
       - ./scripts:/scripts
       - ./oracles-config.toml:/root/oracles-config.toml
     ports:
-      - 7171:7171
+      - 127.0.0.1:7171:7171
     restart: on-failure
     env_file: .env
     entrypoint: ["sh", "/scripts/start-oracle.sh"]

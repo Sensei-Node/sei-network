@@ -126,11 +126,11 @@ After getting these files just replace on the destination validator server (once
 
 ### How to setup validator identity and details
 
-Identity is just your keybase account, make sure to upload a profile picture.
+Identity is just your keybase PGP key, for this you need to generate one and add it to your keybase account, make sure to upload a profile picture to keybase in order to be seen.
 
 ```
 seid tx staking edit-validator \
-    --identity="keybase_account_name" \
+    --identity="keybase_pgp_16char_hex" \
     --details="Whatever you wish to include as description" \
     --chain-id=$CHAIN_ID \
     --from=$ACCOUNT_NAME \
