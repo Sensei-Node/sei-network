@@ -120,8 +120,16 @@ if [ ! -z "$USE_SEI_DB" ]; then
   echo "Setting up SeiDB..."
   sed -i.bak -e "s|^sc-enable *=.*|sc-enable = true|" $HOME/.sei/config/app.toml
   sed -i.bak -e "s|^sc-snapshot-writer-limit *=.*|sc-snapshot-writer-limit = 1|" $HOME/.sei/config/app.toml
-  sed -i '/^\[state-commit\]/a sc-cache-size = 100000' $HOME/.sei/config/app.toml
-  sed -i.bak -e "s|^ss-enable *=.*|ss-enable = true|" $HOME/.sei/config/app.toml
+  if grep -q '^sc-cache-size =' "$HOME/.sei/config/app.toml"; then
+    sed -i.bak -e "s|^sc-cache-size *=.*|sc-cache-size = 100000|" $HOME/.sei/config/app.toml
+  else
+    sed -i '/^\[state-commit\]/a sc-cache-size = 100000' $HOME/.sei/config/app.toml
+  fi
+  if [ "$MODE" != "validator" ]; then
+    sed -i.bak -e "s|^ss-enable *=.*|ss-enable = true|" $HOME/.sei/config/app.toml
+  else
+    sed -i.bak -e "s|^ss-enable *=.*|ss-enable = false|" $HOME/.sei/config/app.toml
+  fi
 fi
 
 # Do not advertise peers, for connecting from a validator to a sentry only
