@@ -47,10 +47,18 @@ USE_STATE_SYNC=
 # If you want to use snapshot sync (only available for mainnet)
 USE_SNAPSHOTS=
 
-# If you want to set up a validator node with a sentry, the validator peer should be specified here
+# If you want to reset peers to current values
+RESET_PEERS=
+
+# (SENTRY ONLY) If you want to set up a validator node with a sentry, the validator peer should be specified here
 # in order not to be broadcasted to the network
-# TO BE IMPLEMENTED
 PRIVATE_PEER=
+
+# (VALIDATOR ONLY) This should be set only if the node is validator, and want to just connect to a sentry node
+HAS_PRIVATE_VALIDATOR=
+
+# For new seiv2 it is required to use SeiDB so set this to true
+USE_SEI_DB=true
 
 # ------------------------------------ ORACLE VARIABLES ------------------------------------
 

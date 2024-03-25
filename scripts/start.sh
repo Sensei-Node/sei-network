@@ -6,7 +6,7 @@ if [ -z "$CHAIN_ID" ]; then
 fi
 
 # Cleanup the node
-if [ "$PRUNE_DATA" != "" ]; then
+if [ ! -z "$PRUNE_DATA" ]; then
   echo "Backing up val state..."
   cp $HOME/.sei/data/priv_validator_state.json $HOME/.sei/priv_validator_state.json.backup
   echo "Pruning data, wasm folder..."
@@ -26,24 +26,26 @@ elif [ "$CHAIN_ID" = "pacific-1" ]; then
 fi
 
 # Initializes the node, downloads genesis and syncs from state/snapshot
-if [ "$INIT_NODE" != "" ]; then
+if [ ! -z "$INIT_NODE" ]; then
   # Initialize the node
   seid init $MONIKER --chain-id $CHAIN_ID
   # Get the genesis file 
   wget -O $HOME/.sei/config/genesis.json "$PRIMARY_SNAP/sei/genesis.json" --inet4-only
   # Set primary rpcs
   sed -i.bak -e "s|^rpc-servers *=.*|rpc-servers = \"$PRIMARY_RPC,$PRIMARY_RPC\"|" $HOME/.sei/config/config.toml
-  if [ "$USE_COSMOVISOR" != "" ]; then
+  if [ -z "$USE_COSMOVISOR" ]; then
     # Initialize cosmovisor data structure
     cosmovisor init /go/bin/seid
   fi
-  if [ "$USE_STATE_SYNC" != "" ]; then
+  if [ ! -z "$USE_STATE_SYNC" ]; then
     # For atlantic-2 testnet we also get the addrbook
     if [ "$CHAIN_ID" = "atlantic-2" ]; then
       WASM_URL="https://snapshots.polkachu.com/testnet-wasm/sei/sei_wasmonly.tar.lz4"
-      # Addrbook get
-      wget -O addrbook.json https://snapshots.polkachu.com/testnet-addrbook/sei/addrbook.json --inet4-only
-      mv addrbook.json $HOME/.sei/config
+      if [ -z "$HAS_PRIVATE_VALIDATOR" ]; then
+        # Addrbook get
+        wget -O addrbook.json https://snapshots.polkachu.com/testnet-addrbook/sei/addrbook.json --inet4-only
+        mv addrbook.json $HOME/.sei/config
+      fi
     elif [ "$CHAIN_ID" = "pacific-1" ]; then
       WASM_URL="https://snapshots.kjnodes.com/sei/wasm_latest.tar.lz4"
     fi
@@ -71,7 +73,7 @@ if [ "$INIT_NODE" != "" ]; then
     sed -i.bak -e "s|^trust-height *=.*|trust-height = $SYNC_BLOCK_HEIGHT|" $HOME/.sei/config/config.toml
     sed -i.bak -e "s|^trust-hash *=.*|trust-hash = \"$SYNC_BLOCK_HASH\"|" $HOME/.sei/config/config.toml
     sed -i.bak -e "s|^db-sync-enable *=.*|db-sync-enable = false|" $HOME/.sei/config/config.toml
-  elif [ "$USE_SNAPSHOTS" != "" ]; then
+  elif [ ! -z "$USE_SNAPSHOTS" ]; then
     if [ "$CHAIN_ID" = "pacific-1" ]; then
       # Use snapshot sync for mainnet
       echo "Downloading latest snapshot..."
@@ -83,25 +85,55 @@ if [ "$INIT_NODE" != "" ]; then
     # Set min gas price
     sed -i.bak -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"0.02usei\"|" $HOME/.sei/config/app.toml
     # Using a seed node to bootstrap is considered the best practice
-    if grep -q '^seeds =' "$HOME/.sei/config/config.toml"; then
-      sed -i.bak -e "s|^seeds *=.*|seeds = \"400f3d9e30b69e78a7fb891f60d76fa3c73f0ecc@sei.rpc.kjnodes.com:16859\"|" $HOME/.sei/config/config.toml
-    else
-      echo 'seeds = "400f3d9e30b69e78a7fb891f60d76fa3c73f0ecc@sei.rpc.kjnodes.com:16859"' >> "$HOME/.sei/config/config.toml"
+    if [ -z "$HAS_PRIVATE_VALIDATOR" ]; then
+      if grep -q '^seeds =' "$HOME/.sei/config/config.toml"; then
+        sed -i.bak -e "s|^seeds *=.*|seeds = \"400f3d9e30b69e78a7fb891f60d76fa3c73f0ecc@sei.rpc.kjnodes.com:16859\"|" $HOME/.sei/config/config.toml
+      else
+        echo 'seeds = "400f3d9e30b69e78a7fb891f60d76fa3c73f0ecc@sei.rpc.kjnodes.com:16859"' >> "$HOME/.sei/config/config.toml"
+      fi
     fi
   fi
 fi
 
 # Set peering
-if [ "$INIT_NODE" != "" ] || [ "$RESET_PEERS" != "" ]; then
+if [ ! -z "$INIT_NODE" ] || [ ! -z "$RESET_PEERS" ]; then
   echo "Setting persistent peers..."
   OUR_PEERS=$INCLUDE_PEERS
   SELF=$(cat $HOME/.sei/config/node_key.json |jq -r .id)
-  $(echo $OUR_PEERS |grep -v "$SELF") > OUR_PEERS
+  echo $(echo $OUR_PEERS |grep -v "$SELF") > OUR_PEERS
   OUR_PEERS="$(paste -s -d ',' OUR_PEERS)"
   curl "$PRIMARY_RPC"/net_info |jq -r '.peers[] | .url' |sed -e 's#mconn://##' |grep -v "$SELF" |grep -v "localhost" |grep -v "127.0.0.1" |grep -v "0.0.0.0" > PEERS
   PRUNED_PEERS="$(paste -s -d ',' PEERS)"
   PERSISTENT_PEERS="$PRUNED_PEERS,$OUR_PEERS"
   sed -i.bak -e "s|^persistent-peers *=.*|persistent-peers = \"$PERSISTENT_PEERS\"|" $HOME/.sei/config/config.toml
+  sed -i.bak -e "s|^pex *=.*|pex = true|" $HOME/.sei/config/config.toml
+fi
+
+# Do not broadcast this peer id
+if [ ! -z "$PRIVATE_PEER" ]; then
+  echo "Excluding defined private peer..."
+  sed -i.bak -e "s|^private-peer-ids *=.*|private-peer-ids = \"$PRIVATE_PEER\"|" $HOME/.sei/config/config.toml
+fi
+
+# Use SeiDB (new db for seiv2)
+if [ ! -z "$USE_SEI_DB" ]; then
+  echo "Setting up SeiDB..."
+  sed -i.bak -e "s|^sc-enable *=.*|sc-enable = true|" $HOME/.sei/config/app.toml
+  sed -i.bak -e "s|^sc-snapshot-writer-limit *=.*|sc-snapshot-writer-limit = 1|" $HOME/.sei/config/app.toml
+  sed -i '/^\[state-commit\]/a sc-cache-size = 100000' $HOME/.sei/config/app.toml
+  sed -i.bak -e "s|^ss-enable *=.*|ss-enable = true|" $HOME/.sei/config/app.toml
+fi
+
+# Do not advertise peers, for connecting from a validator to a sentry only
+if [ ! -z "$HAS_PRIVATE_VALIDATOR" ]; then
+  echo "Setting pex to false..."
+  sed -i.bak -e "s|^pex *=.*|pex = false|" $HOME/.sei/config/config.toml
+  echo "Setting private sentry persistent peer..."
+  OUR_PEERS=$INCLUDE_PEERS
+  SELF=$(cat $HOME/.sei/config/node_key.json |jq -r .id)
+  echo $(echo $OUR_PEERS |grep -v "$SELF") > OUR_PEERS
+  OUR_PEERS="$(paste -s -d ',' OUR_PEERS)"
+  sed -i.bak -e "s|^persistent-peers *=.*|persistent-peers = \"$OUR_PEERS\"|" $HOME/.sei/config/config.toml
 fi
 
 # General settings
@@ -119,7 +151,7 @@ sed -i \
   $HOME/.sei/config/app.toml
 
 # If you want to use cosmovisor
-if [ "$USE_COSMOVISOR" != "" ]; then
+if [ ! -z "$USE_COSMOVISOR" ]; then
   cosmovisor run start
 fi
 # Otherwise start binary as default
