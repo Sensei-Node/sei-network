@@ -157,6 +157,12 @@ sed -i \
   -e 's|^pruning-keep-every *=.*|pruning-keep-every = "0"|' \
   -e 's|^pruning-interval *=.*|pruning-interval = "19"|' \
   $HOME/.sei/config/app.toml
+# Other settings
+sed -i -e "s/ttl-duration = \".*\"/ttl-duration = \"15s\"/" $HOME/.sei/config/config.toml
+sed -i -e "s|^ttl-num-blocks *=.*|ttl-num-blocks = 30|" $HOME/.sei/config/config.toml
+if [ "$MODE" = "validator" ]; then
+  sed -i -e "s|^indexer *=.*|indexer = [\"null\"]|" $HOME/.sei/config/config.toml
+fi
 
 # If you want to use cosmovisor
 if [ ! -z "$USE_COSMOVISOR" ]; then
