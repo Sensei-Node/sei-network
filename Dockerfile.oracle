@@ -12,16 +12,16 @@ RUN go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@${COSMOVISOR_TAG}
 
 # Make binaries for desired release tag
 RUN git clone https://github.com/sei-protocol/sei-chain.git . --branch ${REL_TAG}
-RUN make build
+RUN make build-price-feeder
 RUN mkdir -p /root/binaries/${REL_TAG}
-RUN mv /app/build/seid /root/binaries/${REL_TAG}
+RUN mv /app/build/price-feeder /root/binaries/${REL_TAG}
 RUN rm -rf /app/build
 
 ## ------------- SETTING UP COSMOVISOR ------------- ##
 
 # Prepare env variables for Cosmovisor
 ENV DAEMON_HOME /root/.sei
-ENV DAEMON_NAME seid
+ENV DAEMON_NAME price-feeder
 ENV UNSAFE_SKIP_BACKUP true
 ENV DAEMON_RESTART_AFTER_UPGRADE true
 ENV DAEMON_ALLOW_DOWNLOAD_BINARIES false
@@ -36,4 +36,4 @@ ENV PATH $PATH:/usr/local/go/bin:$HOME/go/bin:/usr/bin:/root/binaries:/root/.sei
 COPY scripts/* ./scripts/
 RUN chmod +x ./scripts/*.sh
 
-ENTRYPOINT ["sh", "/scripts/start.sh"]
+ENTRYPOINT ["sh", "/scripts/start-oracle.sh"]

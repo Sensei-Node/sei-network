@@ -1,12 +1,13 @@
-version: "3.0"
-
 services:
   sei:
+    platform: linux/x86_64
     build:
       context: .
+      dockerfile: Dockerfile
       args:
         - REL_TAG=$REL_TAG
         - COSMOVISOR_TAG=$COSMOVISOR_TAG
+        - UPGRADE_TAG=$UPGRADE_TAG
     volumes:
       - ./sei:/root/.sei
       - ./scripts:/scripts
@@ -19,13 +20,16 @@ services:
         max-size: "1g"
 
   oracles:
+    platform: linux/x86_64
     build:
       context: .
+      dockerfile: Dockerfile.oracle
       args:
         - REL_TAG=$REL_TAG
         - COSMOVISOR_TAG=$COSMOVISOR_TAG
+        - UPGRADE_TAG=$UPGRADE_TAG
     volumes:
-      - ./sei:/root/.sei
+      - ./sei-oracle:/root/.sei
       - ./scripts:/scripts
       - ./oracles-config.toml:/root/oracles-config.toml
     ports:
