@@ -31,8 +31,6 @@ CHAIN_ID=
 # Node operation mode: full, validator, etc.
 MODE=
 
-# Node folder structure initialization
-INIT_NODE=
 # For wiping database, first backing up priv-val-state.json
 PRUNE_DATA=
 
@@ -93,13 +91,9 @@ Also, having the proper bootnodes is key for having a synced node. If this list 
 There are some variables that need to be included in order to use cosmovisor as launcher, these could be included in the same `.env` file:
 
 ```
-USE_COSMOVISOR=true
-COSMOVISOR_TAG=v1.3.0
-DAEMON_HOME=/root/.sei
-DAEMON_NAME=seid
-UNSAFE_SKIP_BACKUP=true
-DAEMON_RESTART_AFTER_UPGRADE=true
-DAEMON_ALLOW_DOWNLOAD_BINARIES=false
+COSMOVISOR_TAG=v1.5.0
+UPGRADE_TAG=v3.8.0
+UPGRADE_HEIGHT=
 ```
 
 ---
