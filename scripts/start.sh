@@ -16,7 +16,8 @@ set_peering() {
   SELF=$(cat $HOME_PATH/config/node_key.json |jq -r .id)
   echo $(echo $OUR_PEERS |grep -v "$SELF") > OUR_PEERS
   OUR_PEERS="$(paste -s -d ',' OUR_PEERS)"
-  curl "$PRIMARY_RPC"/net_info |jq -r '.peers[] | .url' |sed -e 's#mconn://##' |grep -v "$SELF" |grep -v "localhost" |grep -v "127.0.0.1" |grep -v "0.0.0.0" > PEERS
+  curl "$PRIMARY_RPC"/net_info | jq -r '.peers | .[0:8] | .[] | .url' | sed -e 's#mconn://##' | grep -v "$SELF" | grep -v "localhost" | grep -v "127.0.0.1" | grep -v "0.0.0.0" > PEERS
+  # curl "$PRIMARY_RPC"/net_info |jq -r '.peers[] | .url' |sed -e 's#mconn://##' |grep -v "$SELF" |grep -v "localhost" |grep -v "127.0.0.1" |grep -v "0.0.0.0" > PEERS
   PRUNED_PEERS="$(paste -s -d ',' PEERS)"
   PERSISTENT_PEERS="$PRUNED_PEERS,$OUR_PEERS"
   sed -i.bak -e "s|^persistent-peers *=.*|persistent-peers = \"$PERSISTENT_PEERS\"|" $HOME_PATH/config/config.toml
@@ -162,7 +163,7 @@ fi
 sed -i -e "s/moniker = \".*\"/moniker = \"$MONIKER\"/" $HOME_PATH/config/config.toml
 sed -i -e "s/mode = \".*\"/mode = \"$MODE\"/" $HOME_PATH/config/config.toml
 sed -i -e "s/chain-id = \".*\"/chain-id = \"$CHAIN_ID\"/" $HOME_PATH/config/client.toml
-sed -i -e "s|^max-connections *=.*|max-connections = 400|" $HOME_PATH/config/config.toml
+sed -i -e "s|^max-connections *=.*|max-connections = 50|" $HOME_PATH/config/config.toml
 sed -i 's/127\.0\.0\.1/0.0.0.0/g' $HOME_PATH/config/config.toml
 # Set pruning
 sed -i \
