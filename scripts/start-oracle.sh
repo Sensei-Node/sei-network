@@ -14,7 +14,7 @@ if [ "$START_ORACLE" != "" ]; then
 
   # Initialize cosmovisor and copy binaries
   if [ ! -f "$HOME_PATH/cosmovisor/config.toml" ]; then
-    cosmovisor init /root/binaries/${REL_TAG}/seid
+    cosmovisor init /root/binaries/${REL_TAG}/price-feeder
     # Needs a data folder in order to execute run commands
     mkdir -p $HOME_PATH/data
   fi
@@ -25,7 +25,7 @@ if [ "$START_ORACLE" != "" ]; then
   sed -i "s/validator = \"\"/validator = \"$VALIDATOR_ADDR\"/g" /root/config.toml
 
   # Start the price feeder oracle
-  cosmovisor run start /root/config.toml
+  cosmovisor run /root/config.toml
   # price-feeder /root/config.toml
 fi
 
