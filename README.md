@@ -18,6 +18,9 @@ cd sei-network
 
 Make a copy of the `.env-default` to `.env` and modify it according to your node neccesities. Note: DOWNLOAD_SNAPSHOT is only available for pacific-1 mainnet.
 
+### First run
+set the variables in `scripts-rewards-distribute.sh` and run `start-environment.sh`
+
 ```
 # ------------------------------------ NODE VARIABLES ------------------------------------
 
