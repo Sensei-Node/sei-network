@@ -78,6 +78,17 @@ VALIDATOR_ADDR=
 docker-compose up -d
 ``` 
 
+### Rewards Distribute
+
+set the variables in `scripts-rewards-distribute.sh` and run `start-environment.sh`
+At first run, `scripts-rewards-distribute.sh` will be vanished from the folder, in order to preserve the credentials obfuscated. Please keep this in mind.
+
+The Wallet should be setted in `VALIDATOR_ADDR` resided in `.env`
+
+A sidecar `cron` container will be execute de rewards distribution. Set the frequency in ` cron.ini ` file
+```
+
+
 ### How to get the node in sync
 
 There are two avilable options for syncing the node rapidly, one way (and in our opinion the best) is using `state sync` the project is prepared in a way that you could use this syncing method for both `pacific-1` mainnet and `atlantic-2` testnet.

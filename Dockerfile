@@ -1,4 +1,40 @@
+# syntax=docker/dockerfile:1
+FROM debian:12-slim AS builder
+RUN set -ex \
+    && sed -i -- 's/Types: deb/Types: deb deb-src/g' /etc/apt/sources.list.d/debian.sources \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+               build-essential \
+               curl \
+               cdbs \
+               devscripts \
+               equivs \
+               fakeroot \
+               git \
+               make \
+               autoconf \
+               automake \
+               m4 \
+               unzip \
+    && apt-get clean \
+    && rm -rf /tmp/* /var/tmp/*
+
+WORKDIR /app
+RUN git clone https://github.com/neurobin/shc.git
+
+WORKDIR /app/shc
+RUN autoreconf -vsi --force
+RUN ./configure --build=x86_64-unknown-linux-gnu
+RUN make install
+
+WORKDIR /tmp
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+RUN unzip awscliv2.zip
+RUN ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli 
+
 FROM golang:1.22.1
+COPY --from=builder /usr/local/bin/shc /usr/local/bin/shc
+COPY --from=builder /usr/local/bin/aws /usr/local/bin/aws
 
 # Prepare dependencies
 WORKDIR /app
