@@ -1,13 +1,19 @@
 version: "3.0"
 
 services:
-  sei:
-    container_name: sei-network
+  master: &build
     build:
       context: .
       args:
         - REL_TAG=$REL_TAG
         - COSMOVISOR_TAG=$COSMOVISOR_TAG
+    env_file: .env
+    image: senseinode/sei:latest
+  
+  sei:
+    <<: *build
+    container_name: sei-network
+    image: senseinode/sei:latest
     volumes:
       - ./sei:/root/.sei
       - ./scripts:/scripts

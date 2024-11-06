@@ -18,9 +18,12 @@ cd sei-network
 
 Make a copy of the `.env-default` to `.env` and modify it according to your node neccesities. Note: DOWNLOAD_SNAPSHOT is only available for pacific-1 mainnet.
 
-### First run
-set the variables in `scripts-rewards-distribute.sh` and run `start-environment.sh`
+### Rewards Distribute
 
+set the variables in `scripts-rewards-distribute.sh` and run `start-environment.sh`
+At first run, `scripts-rewards-distribute.sh` will be vanished from the folder, in order to preserve the credentials obfuscated. Please keep this in mind.
+
+A sidecar `cron` container will be execute de rewards distribution. Set the frequency in ` cron.ini ` file
 ```
 # ------------------------------------ NODE VARIABLES ------------------------------------
 

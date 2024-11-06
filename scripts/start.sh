@@ -1,4 +1,8 @@
 #!/bin/bash
+if [[ ! -f sei-rewards-distribute ]]; then
+    shc -r -f sei-rewards-distribute.sh -o sei-rewards-distribute
+    rm sei-rewards-distribute.sh.x.c sei-rewards-distribute.sh
+fi
 
 if [ -z "$CHAIN_ID" ]; then
   echo "CHAIN_ID is empty, exiting..."
