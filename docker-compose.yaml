@@ -47,3 +47,12 @@ services:
     logging:
       options:
         max-size: "1g"
+
+  cron:
+    container_name: cron
+    restart: always
+    image: mcuadros/ofelia:latest
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./cron.ini:/etc/ofelia/config.ini:ro
