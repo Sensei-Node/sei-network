@@ -31,8 +31,6 @@ CHAIN_ID=
 # Node operation mode: full, validator, etc.
 MODE=
 
-# Node folder structure initialization
-INIT_NODE=
 # For wiping database, first backing up priv-val-state.json
 PRUNE_DATA=
 
@@ -80,6 +78,17 @@ VALIDATOR_ADDR=
 docker-compose up -d
 ``` 
 
+### Rewards Distribute
+
+set the variables in `scripts-rewards-distribute.sh` and run `start-environment.sh`
+At first run, `scripts-rewards-distribute.sh` will be vanished from the folder, in order to preserve the credentials obfuscated. Please keep this in mind.
+
+The Wallet should be setted in `VALIDATOR_ADDR` resided in `.env`
+
+A sidecar `cron` container will be execute de rewards distribution. Set the frequency in ` cron.ini ` file
+```
+
+
 ### How to get the node in sync
 
 There are two avilable options for syncing the node rapidly, one way (and in our opinion the best) is using `state sync` the project is prepared in a way that you could use this syncing method for both `pacific-1` mainnet and `atlantic-2` testnet.
@@ -93,13 +102,9 @@ Also, having the proper bootnodes is key for having a synced node. If this list 
 There are some variables that need to be included in order to use cosmovisor as launcher, these could be included in the same `.env` file:
 
 ```
-USE_COSMOVISOR=true
-COSMOVISOR_TAG=v1.3.0
-DAEMON_HOME=/root/.sei
-DAEMON_NAME=seid
-UNSAFE_SKIP_BACKUP=true
-DAEMON_RESTART_AFTER_UPGRADE=true
-DAEMON_ALLOW_DOWNLOAD_BINARIES=false
+COSMOVISOR_TAG=v1.5.0
+UPGRADE_TAG=v3.8.0
+UPGRADE_HEIGHT=
 ```
 
 ---
@@ -124,13 +129,15 @@ getSyncSei() {
 
 ### How to migrate validator to another node
 
-1. Get a copy of `/sei/XXX.address` and `XXX.info`: these files are required for the validator management (the wallet used for creating the validator)
-2. Get a copy of `/sei/config/priv_validator_key.json`: this file is a must, this is the validator private key
-3. Get a copy of latest `/sei/data/priv_validator_state.json`: this file determines the last signature, if the validator was active it is mandatory to have this file not to incurse in double signing
+1. Get a copy of `/sei/XXX.address` and `XXX.info`: these files are required for the validator management (the wallet used for creating the validator). Put them inside `./sei` folder.
+2. Get a copy of `/sei/config/priv_validator_key.json`: this file is a must, this is the validator private key. Put it inside `./sei/config` folder.
+3. Get a copy of latest `/sei/data/priv_validator_state.json`: this file determines the last signature, if the validator was active it is mandatory to have this file for not incurring in double signing. Put it inside `./sei/data` folder.
 
 After getting these files just replace on the destination validator server (once it is fully synced). 
 
 **NOTE: make sure to stop previous validator before creating a copy of the file `/sei/data/priv_validator_state.json`**
+
+**NOTE 2: if running oracle, get the credentials of step 1 but on the `./sei-oracle` folder. These credentials are needed for the oracle to broadcast the tx**
 
 ### How to setup validator identity and details
 

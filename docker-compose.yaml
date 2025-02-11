@@ -1,15 +1,23 @@
-version: "3.0"
-
 services:
-  sei:
+  master: &build
+    platform: linux/x86_64
     build:
       context: .
       args:
         - REL_TAG=$REL_TAG
         - COSMOVISOR_TAG=$COSMOVISOR_TAG
+        - UPGRADE_TAG=$UPGRADE_TAG
+    env_file: .env
+    image: senseinode/sei:latest
+
+  sei:
+    <<: *build
+    container_name: sei-network
+    image: senseinode/sei:latest
     volumes:
       - ./sei:/root/.sei
       - ./scripts:/scripts
+      - UPGRADE_TAG=$UPGRADE_TAG
     ports:
       - 26656:26656
     restart: unless-stopped
@@ -19,13 +27,16 @@ services:
         max-size: "1g"
 
   oracles:
+    platform: linux/x86_64
     build:
       context: .
+      dockerfile: Dockerfile.oracle
       args:
         - REL_TAG=$REL_TAG
         - COSMOVISOR_TAG=$COSMOVISOR_TAG
+        - UPGRADE_TAG=$UPGRADE_TAG
     volumes:
-      - ./sei:/root/.sei
+      - ./sei-oracle:/root/.sei
       - ./scripts:/scripts
       - ./oracles-config.toml:/root/oracles-config.toml
     ports:
@@ -36,3 +47,12 @@ services:
     logging:
       options:
         max-size: "1g"
+
+  cron:
+    container_name: cron
+    restart: always
+    image: mcuadros/ofelia:latest
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./cron.ini:/etc/ofelia/config.ini:ro

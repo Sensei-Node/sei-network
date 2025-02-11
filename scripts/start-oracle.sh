@@ -6,9 +6,18 @@ if [ "$START_ORACLE" != "" ]; then
     exit 1
   fi
 
+  HOME_PATH="/root/.sei"
+
   # Remove old config if existent, and copy sample
   rm -f /root/config.toml
   cp /root/oracles-config.toml /root/config.toml
+
+  # Initialize cosmovisor and copy binaries
+  if [ ! -f "$HOME_PATH/cosmovisor/config.toml" ]; then
+    cosmovisor init /root/binaries/${REL_TAG}/price-feeder
+    # Needs a data folder in order to execute run commands
+    mkdir -p $HOME_PATH/data
+  fi
 
   # Replace with variables values
   sed -i "s/address = \"\"/address = \"$ORACLE_SIGNER_ADDR\"/g" /root/config.toml
@@ -16,7 +25,8 @@ if [ "$START_ORACLE" != "" ]; then
   sed -i "s/validator = \"\"/validator = \"$VALIDATOR_ADDR\"/g" /root/config.toml
 
   # Start the price feeder oracle
-  price-feeder /root/config.toml
+  cosmovisor run /root/config.toml
+  # price-feeder /root/config.toml
 fi
 
 exit 0
