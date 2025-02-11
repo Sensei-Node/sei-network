@@ -86,7 +86,6 @@ At first run, `scripts-rewards-distribute.sh` will be vanished from the folder, 
 The Wallet should be setted in `VALIDATOR_ADDR` resided in `.env`
 
 A sidecar `cron` container will be execute de rewards distribution. Set the frequency in ` cron.ini ` file
-```
 
 
 ### How to get the node in sync
